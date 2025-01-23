@@ -68,7 +68,7 @@ class FactCheck:
         self.query_generator = QueryGenerator(llm_client=self.query_generator_model, prompt=self.prompt)
         self.evidence_crawler = retriever_mapper(retriever_name=retriever)(
             llm_client=self.evidence_retrieval_model, api_config=self.api_config
-        )
+        ) 
         self.claimverify = ClaimVerify(llm_client=self.claim_verify_model, prompt=self.prompt)
         self.attr_list = ["decomposer", "checkworthy", "query_generator", "evidence_crawler", "claimverify"]
         self.num_seed_retries = num_seed_retries
@@ -121,6 +121,7 @@ class FactCheck:
 
         # step 4
         claim_evidences_dict = self.evidence_crawler.retrieve_evidence(claim_queries_dict=claim_queries_dict)
+        # claim_evidences_dict = self.evidence_crawler.retrieve_evidence(claim_query_dict=claim_queries_dict)
         for claim, evidences in claim_evidences_dict.items():
             logger.info(f"== Claim: {claim}")
             logger.info(f"== Evidence: {evidences}\n")
