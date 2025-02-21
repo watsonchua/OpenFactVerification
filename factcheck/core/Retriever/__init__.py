@@ -1,9 +1,12 @@
 from .google_retriever import GoogleEvidenceRetriever
 from .serper_retriever import SerperEvidenceRetriever
+from .wikipedia_retriever import WikipediaEvidenceRetriever
+
 
 retriever_map = {
     "google": GoogleEvidenceRetriever,
     "serper": SerperEvidenceRetriever,
+    "wikipedia": WikipediaEvidenceRetriever
 }
 
 

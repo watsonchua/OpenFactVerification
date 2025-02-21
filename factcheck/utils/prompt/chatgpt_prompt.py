@@ -135,9 +135,33 @@ Output:
 """
 
 
+qgen_wiki_prompt = """Given a claim, your task is to create a minimum number of queries needed on Wikipedia to verify the correctness of the claim. The queries have to be simple and straightforward about a topic which reflects a wikipedia article title. Output in JSON format with a single key "Questions", the value is a list of questions. For example:
+
+Claim: Your nose switches back and forth between nostrils. When you sleep, you switch about every 45 minutes. This is to prevent a buildup of mucus. It’s called the nasal cycle.
+Output: {{"Questions": ["Nasal Cycle", "Nostrils", "Nose Functions"]}}
+
+Claim: The Stanford Prison Experiment was conducted in the basement of Encina Hall, Stanford’s psychology building.
+Output:
+{{"Question":["Stanford Prison Experiment"]}}
+
+Claim: The Havel-Hakimi algorithm is an algorithm for converting the adjacency matrix of a graph into its adjacency list. It is named after Vaclav Havel and Samih Hakimi.
+Output:
+{{"Questions":["Havel-Hakimi algorithm", "Vaclav Havel", "Samih Hakimi"]}}
+
+Claim: Social work is a profession that is based in the philosophical tradition of humanism. It is an intellectual discipline that has its roots in the 1800s.
+Output:
+{{"Questions":["Social Work", "Humanism"]}}
+
+Claim: {claim}
+Output:
+"""
+
 class ChatGPTPrompt:
     decompose_prompt = decompose_prompt
     restore_prompt = restore_prompt
     checkworthy_prompt = checkworthy_prompt
     qgen_prompt = qgen_prompt
     verify_prompt = verify_prompt
+
+class ChatGPTWikiPrompt(ChatGPTPrompt):
+    qgen_prompt = qgen_wiki_prompt

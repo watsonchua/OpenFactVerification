@@ -1,7 +1,25 @@
 from factcheck.utils.logger import CustomLogger
 import wikipedia
-
 logger = CustomLogger(__name__).getlog()
+import pdb
+import requests
+
+wiki_session = requests.Session()
+
+wiki_url = "https://en.wikipedia.org/w/api.php"
+
+def wiki_search(query_term, limit=1):
+    params = {
+        "action": "opensearch",
+        "namespace": "0",
+        "search": query_term,
+        "limit": str(limit),
+        "format": "json"
+    }
+
+    results = wiki_session.get(url=wiki_url, params=params)
+    data = results.json()
+    return {"page_title": data[1], "url": data[3]}
 
 
 class WikipediaEvidenceRetriever:
@@ -84,37 +102,57 @@ class WikipediaEvidenceRetriever:
 
         try:
             # Search for pages related to the query
-            search_results = wikipedia.search(query, results=top_k)
-            
-            if not search_results:
-                print(f"No Wikipedia page found for the {query}.")
+            # search_results = wikipedia.search(query, results=top_k)
+            search_results = wiki_search(query)
+            page_titles = search_results["page_title"]
 
+            
+            # no pages found
+            # if not search_results:
+            if not page_titles:
+                print(f"No Wikipedia page found for the {query}.")
                 return []
 
-            top_results = search_results[:top_k]
-            
-            for page_title in top_results:
-                wiki_page = wikipedia.page(title=page_title)
-                # page_summary = wikipedia.summary(page_title, sentences=3)  # Limit to 3 sentences for brevity            
-                if snippet_extend_flag:
-                    page_content = wiki_page.content
-                    query_results.append(f"{page_title}: {page_content}")
-                else:
-                    page_summary = wiki_page.summary
-                    query_results.append(f"{page_title}: {page_summary}")
+            # top_results = search_results[:top_k]
+            # use first search result
+            page_title = page_titles[0]
+
+            # for page_title in search_results:
+            wiki_page = wikipedia.page(title=page_title)
 
         except wikipedia.exceptions.DisambiguationError as e:
             # Handle cases where the search term is ambiguous
             print(f"The term '{query}' is ambiguous. Possible options: {', '.join(e.options[:5])}.")
+            print(f"Using option {e.options[0]}.")
+            # breakpoint()
+            # wiki_page = wikipedia.page(e.options[0])
             return []
+
+
         except wikipedia.exceptions.PageError:
             # Handle cases where the page does not exist
-            print("The Wikipedia page does not exist.")
+            print(f"The Wikipedia page for '{query}' does not exist.")
             return []
-        except Exception as e:
-            # Catch other exceptions
-            print(f"An error occurred: {e}")
-            return []
+
+        # page_summary = wikipedia.summary(page_title, sentences=3)  # Limit to 3 sentences for brevity            
+        if snippet_extend_flag:
+            page_content = wiki_page.content
+            # query_results.append(f"{page_title}: {page_content}")
+            query_results.append({"text": f"{page_title}: {page_content}", "url": ""})
+
+        else:
+            page_summary = wiki_page.summary
+            # query_results.append(f"{page_title}: {page_summary}")
+            query_results.append({"text": f"{page_title}: {page_summary}", "url": ""})
+
+    
+        return query_results
+
+        
+        # except Exception as e:
+        #     # Catch other exceptions
+        #     print(f"An error occurred: {e}")
+        #     return []
 
 
 

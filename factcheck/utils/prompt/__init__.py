@@ -1,10 +1,11 @@
-from .chatgpt_prompt import ChatGPTPrompt
+from .chatgpt_prompt import ChatGPTPrompt, ChatGPTWikiPrompt
 from .chatgpt_prompt_zh import ChatGPTPromptZH
 from .claude_prompt import ClaudePrompt
 from .customized_prompt import CustomizedPrompt
 
 prompt_map = {
     "chatgpt_prompt": ChatGPTPrompt,
+    "chatgpt_wiki_prompt": ChatGPTWikiPrompt,
     "chatgpt_prompt_zh": ChatGPTPromptZH,
     "claude_prompt": ClaudePrompt,
 }
